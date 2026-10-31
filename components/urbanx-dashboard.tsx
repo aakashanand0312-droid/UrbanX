@@ -339,7 +339,165 @@ function Overview({ setActive }: { setActive: (label: string) => void }) {
 }
 
 
-function ModulePage({ active, setActive }: { active: string; setActive: (label: string) => void }) { if (active === 'City Overview') return <Overview setActive={setActive} />; if (active === 'Urban Map Explorer') return <div className="flex flex-col gap-5"><PageHeading title="Urban Map Explorer" eyebrow="Spatial intelligence" description="Explore city geography and multi-domain layers. Live geospatial observations are not connected." /><div className="relative isolate z-0 overflow-hidden rounded-lg border border-slate-200 bg-white p-3"><div className="mb-3 flex flex-wrap items-center gap-2 border-b border-slate-100 pb-3"><span className="text-[11px] font-semibold text-slate-700">Layers</span>{['Road network', 'Traffic signals', 'Weather', 'Environment', 'Infrastructure', 'Risk zones'].map((layer, i) => <button key={layer} className={`rounded-md border px-2.5 py-1.5 text-[10px] font-medium ${i < 2 ? 'border-blue-200 bg-blue-50 text-blue-700' : 'border-slate-200 text-slate-500'}`}><span className={`mr-1.5 inline-block size-1.5 rounded-full ${i < 2 ? 'bg-blue-600' : 'bg-slate-300'}`} />{layer}</button>)}</div><UrbanMap /></div></div>; if (active === 'Data Sources') return <SourcesPage />; if (active === 'Cross-System Insights') return <InsightsPage />; if (active === 'Simulation Studio') return <SimulationPage />; return <GenericPage active={active} setActive={setActive} /> }
+function ModulePage({ active, setActive }: { active: string; setActive: (label: string) => void }) { if (active === 'City Overview') return <Overview setActive={setActive} />; if (active === 'Urban Map Explorer') return <div className="flex flex-col gap-5"><PageHeading title="Urban Map Explorer" eyebrow="Spatial intelligence" description="Explore city geography and multi-domain layers. Live geospatial observations are not connected." /><div className="relative isolate z-0 overflow-hidden rounded-lg border border-slate-200 bg-white p-3"><div className="mb-3 flex flex-wrap items-center gap-2 border-b border-slate-100 pb-3"><span className="text-[11px] font-semibold text-slate-700">Layers</span>{['Road network', 'Traffic signals', 'Weather', 'Environment', 'Infrastructure', 'Risk zones'].map((layer, i) => <button key={layer} className={`rounded-md border px-2.5 py-1.5 text-[10px] font-medium ${i < 2 ? 'border-blue-200 bg-blue-50 text-blue-700' : 'border-slate-200 text-slate-500'}`}><span className={`mr-1.5 inline-block size-1.5 rounded-full ${i < 2 ? 'bg-blue-600' : 'bg-slate-300'}`} />{layer}</button>)}</div><UrbanMap /></div></div>; if (active === 'Data Sources') return <SourcesPage />; if (active === 'Cross-System Insights') return <InsightsPage />; if (active === 'Simulation Studio') return <SimulationPage />; if (active === 'Traffic Intelligence') return <TrafficDemoPage />; return <GenericPage active={active} setActive={setActive} /> }
+
+const trafficDemo = [
+  { corridor: 'Sector 17 – Sector 22', speed: 28, congestion: 72, volume: 840, level: 'High' },
+  { corridor: 'Sector 34 – Sector 43', speed: 36, congestion: 54, volume: 620, level: 'Moderate' },
+  { corridor: 'Sector 15 – Sector 26', speed: 19, congestion: 86, volume: 1050, level: 'High' },
+  { corridor: 'Sector 8 – Sector 18', speed: 42, congestion: 32, volume: 480, level: 'Low' },
+  { corridor: 'Sector 20 – Sector 35', speed: 24, congestion: 78, volume: 910, level: 'High' },
+]
+
+const trafficHours = [
+  { time: '06:00', volume: 280, speed: 48 },
+  { time: '08:00', volume: 820, speed: 26 },
+  { time: '10:00', volume: 650, speed: 34 },
+  { time: '12:00', volume: 520, speed: 39 },
+  { time: '14:00', volume: 580, speed: 37 },
+  { time: '16:00', volume: 740, speed: 30 },
+  { time: '18:00', volume: 980, speed: 22 },
+  { time: '20:00', volume: 610, speed: 35 },
+]
+
+function TrafficDemoPage() {
+  const averageSpeed = Math.round(
+    trafficDemo.reduce((sum, item) => sum + item.speed, 0) / trafficDemo.length
+  )
+
+  const averageCongestion = Math.round(
+    trafficDemo.reduce((sum, item) => sum + item.congestion, 0) / trafficDemo.length
+  )
+
+  const totalVolume = trafficDemo.reduce(
+    (sum, item) => sum + item.volume, 0
+  )
+
+  return (
+    <div className="flex flex-col gap-5">
+      <PageHeading
+        eyebrow="Urban mobility intelligence"
+        title="Traffic Intelligence"
+        description="Illustrative traffic conditions across selected Chandigarh corridors."
+      />
+
+      <div className="rounded-lg border border-blue-200 bg-blue-50 p-3 text-xs text-blue-800">
+        <strong>SIMULATED DATA</strong> — Traffic speeds, congestion and
+        vehicle volumes are synthetic demonstration values, not live
+        traffic measurements.
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        {[
+          { label: 'Average speed', value: `${averageSpeed} km/h` },
+          { label: 'Average congestion', value: `${averageCongestion}%` },
+          { label: 'Monitored corridors', value: `${trafficDemo.length}` },
+          { label: 'Illustrative vehicle volume', value: totalVolume.toLocaleString() },
+        ].map((item) => (
+          <div key={item.label} className="rounded-lg border bg-card p-4">
+            <p className="text-xs text-muted-foreground">{item.label}</p>
+            <p className="mt-3 text-2xl font-semibold">{item.value}</p>
+            <p className="mt-1 text-[10px] text-blue-600">Simulated</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="grid gap-5 xl:grid-cols-2">
+        <div className="rounded-lg border bg-card p-5">
+          <h2 className="font-semibold">Traffic congestion by corridor</h2>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Illustrative congestion index (%)
+          </p>
+          <div className="mt-5 h-[260px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={trafficDemo} layout="vertical" margin={{ left: 10, right: 15 }}>
+                <CartesianGrid horizontal={false} stroke="#eef1f5" />
+                <XAxis type="number" domain={[0, 100]} tick={{ fontSize: 10 }} />
+                <YAxis
+                  type="category"
+                  dataKey="corridor"
+                  width={125}
+                  tick={{ fontSize: 9 }}
+                />
+                <Tooltip />
+                <Bar dataKey="congestion" name="Congestion %" fill="#2563eb" radius={[0, 4, 4, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        <div className="rounded-lg border bg-card p-5">
+          <h2 className="font-semibold">Daily traffic pattern</h2>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Illustrative vehicle volume by time of day
+          </p>
+          <div className="mt-5 h-[260px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={trafficHours}>
+                <CartesianGrid vertical={false} stroke="#eef1f5" />
+                <XAxis dataKey="time" tick={{ fontSize: 10 }} />
+                <YAxis tick={{ fontSize: 10 }} />
+                <Tooltip />
+                <Line
+                  type="monotone"
+                  dataKey="volume"
+                  name="Vehicle volume"
+                  stroke="#2563eb"
+                  strokeWidth={2.5}
+                  dot={{ r: 3 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      </div>
+
+      <div className="overflow-hidden rounded-lg border bg-card">
+        <div className="border-b p-4">
+          <h2 className="font-semibold">Corridor-level traffic analysis</h2>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Synthetic traffic estimates for demonstration purposes.
+          </p>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[600px] text-left text-xs">
+            <thead className="bg-muted/50 text-muted-foreground">
+              <tr>
+                <th className="p-3">Corridor</th>
+                <th className="p-3">Speed</th>
+                <th className="p-3">Congestion</th>
+                <th className="p-3">Volume</th>
+                <th className="p-3">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {trafficDemo.map((item) => (
+                <tr key={item.corridor} className="border-t">
+                  <td className="p-3 font-medium">{item.corridor}</td>
+                  <td className="p-3">{item.speed} km/h</td>
+                  <td className="p-3">{item.congestion}%</td>
+                  <td className="p-3">{item.volume.toLocaleString()}</td>
+                  <td className="p-3">
+                    <span className="rounded-md bg-blue-50 px-2 py-1 text-blue-700">
+                      {item.level}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-xs leading-relaxed text-amber-900">
+        Traffic values are synthetic and are not linked to actual
+        road sensors or verified traffic feeds. Corridor names are
+        illustrative labels. Do not interpret these results as
+        measured conditions on the corresponding roads.
+      </div>
+    </div>
+  )
+}
 
 function PageHeading({ eyebrow, title, description }: { eyebrow: string; title: string; description: string }) { return <div><div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-blue-600">{eyebrow}</div><h1 className="mt-1 text-[23px] font-semibold tracking-tight text-slate-900">{title}</h1><p className="mt-1 text-[12px] text-slate-500">{description}</p></div> }
 function GenericPage({ active, setActive }: { active: string; setActive: (label: string) => void }) { return <div className="flex flex-col gap-5"><PageHeading eyebrow="UrbanX workspace" title={active} description="This module is ready for a connected FastAPI data service." /><div className="grid gap-4 md:grid-cols-3"><div className="rounded-lg border border-amber-200 bg-amber-50 p-5 md:col-span-2"><div className="flex gap-3"><ShieldAlert className="size-5 text-amber-600" /><div><div className="text-[13px] font-semibold text-slate-800">Connection required</div><p className="mt-1 max-w-xl text-[11px] leading-relaxed text-slate-600">No live provider or backend is connected for this domain. UrbanX will not substitute unverified sample data for live observations. Configure a FastAPI service to activate this workspace.</p><button onClick={() => setActive('Data Sources')} className="mt-4 rounded-md bg-slate-900 px-3 py-2 text-[11px] font-semibold text-white">Review data sources</button></div></div></div><div className="rounded-lg border border-slate-200 bg-white p-5"><Database className="size-5 text-slate-400" /><div className="mt-4 text-[12px] font-semibold text-slate-800">API contract</div><code className="mt-2 block text-[10px] leading-relaxed text-slate-500">GET /api/{active.toLowerCase().replaceAll(' ', '-').replace('&', 'and')}</code><div className="mt-4 text-[10px] text-slate-400">Server URL: not configured</div></div></div></div> }
@@ -677,4 +835,5 @@ function InsightsPage() {
 }
 function SimulationPage() { const [rain, setRain] = useState(25); return <div className="flex flex-col gap-5"><PageHeading eyebrow="Scenario planning" title="Simulation Studio" description="Explore hypothetical scenarios without presenting them as forecasts." /><div className="grid gap-5 xl:grid-cols-[0.75fr_1.25fr]"><div className="rounded-lg border border-slate-200 bg-white p-5"><div className="flex items-center justify-between"><div className="text-[13px] font-semibold text-slate-800">Scenario parameters</div><StatusBadge status="Demo" /></div><label className="mt-6 block text-[11px] font-medium text-slate-700" htmlFor="rain">Rainfall intensity <span className="float-right font-semibold text-blue-600">+{rain}%</span></label><input id="rain" type="range" min="0" max="100" value={rain} onChange={(e) => setRain(Number(e.target.value))} className="mt-3 w-full accent-blue-600" /><div className="mt-6 rounded-md bg-slate-50 p-3 text-[11px] leading-relaxed text-slate-500">Hypothetical estimate based on configured assumptions. No validated hydrological or traffic model is connected.</div><button className="mt-5 flex w-full items-center justify-center gap-2 rounded-md bg-slate-900 py-2.5 text-[11px] font-semibold text-white"><FlaskConical className="size-3.5" />Run scenario comparison</button></div><div className="rounded-lg border border-slate-200 bg-white p-5"><div className="flex items-start justify-between"><div><div className="text-[13px] font-semibold text-slate-800">Baseline vs alternative</div><div className="mt-1 text-[11px] text-slate-500">Illustrative impact index · not a forecast</div></div><span className="rounded bg-violet-50 px-2 py-1 text-[10px] font-semibold text-violet-700">HYPOTHETICAL</span></div><div className="mt-5 h-[230px]"><ResponsiveContainer width="100%" height="100%"><BarChart data={[{name:'Sector 17', baseline:38, alternative:49}, {name:'Sector 22', baseline:42, alternative:56}, {name:'Sector 34', baseline:28, alternative:39}, {name:'Sector 42', baseline:32, alternative:47}]}><CartesianGrid vertical={false} stroke="#eef1f5" /><XAxis dataKey="name" tickLine={false} axisLine={false} tick={{ fill:'#64748b', fontSize:10 }} /><YAxis tickLine={false} axisLine={false} tick={{ fill:'#94a3b8', fontSize:10 }} /><Tooltip contentStyle={{ border:'1px solid #e2e8f0', borderRadius:6, fontSize:11 }} /><Bar dataKey="baseline" fill="#cbd5e1" radius={[3,3,0,0]} /><Bar dataKey="alternative" fill="#2563eb" radius={[3,3,0,0]} /></BarChart></ResponsiveContainer></div></div></div></div> }
 
-export function UrbanXApp() { const [active, setActive] = useState('City Overview'); const [open, setOpen] = useState(false); return <div className="min-h-screen bg-[#f7f8fa] text-slate-900"><div className="flex min-h-screen"><Sidebar active={active} setActive={setActive} open={open} setOpen={setOpen} /><div className="min-w-0 flex-1"><Topbar setOpen={setOpen} /><main className="mx-auto max-w-[1500px] p-4 sm:p-6 lg:p-8"><ModulePage active={active} setActive={setActive} /></main></div></div></div> }
+export function UrbanXApp() { const [active, setActive] = useState('City Overview'); const [open, setOpen] = useState(false); return <div className="min-h-screen bg-[#f7f8fa] text-slate-900"><div className="flex min-h-screen"><Sidebar active={active} setActive={setActive} open={open} setOpen={setOpen} /><div className="min-w-0 flex-1"><Topbar setOpen={setOpen} /><main className="mx-auto max-w-[1500px] p-4 sm:p-6 lg:p-8"><ModulePage active={active} setActive={setActive}
+/></main></div></div></div> }
