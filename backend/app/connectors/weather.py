@@ -1,4 +1,5 @@
 from datetime import datetime, timezone
+from urllib import response
 from app.schemas import UrbanObservation, Location
 
 import httpx
@@ -24,12 +25,18 @@ async def fetch_current_weather():
 
     async with httpx.AsyncClient(timeout=20.0) as client:
         response = await client.get(WEATHER_URL, params=params)
+        if response.status_code == 429:
+            print("Open-Meteo weather rate limit reached. Keeping previously stored data.")
+            return {}
+
         response.raise_for_status()
         return response.json()
 
 
 async def fetch_weather_observations():
     data = await fetch_current_weather()
+    if not data:
+        return []
 
     current = data["current"]
     observed_at = datetime.fromisoformat(
